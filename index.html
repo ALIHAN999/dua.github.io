@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="theme-color" content="#1e1277" />
+    <title>Арабские тексты — пословный перевод</title>
+
+    <!-- Noto Naskh Arabic for Arabic body text -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #f6f7f9;
+        --surface: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --accent: #1e1277;
+        --accent-soft: #ccfbf1;
+        --border: #e5e7eb;
+        --word-size: 26px;
+        --radius: 14px;
+        --shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.06);
+      }
+
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family:
+          'Inter',
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        padding-bottom: 32px;
+      }
+
+      /* ---------- Header ---------- */
+      header.app-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: linear-gradient(135deg, #1e1277 0%, #351aa2 100%);
+        color: #fff;
+        padding: 18px 16px 16px;
+        box-shadow: 0 2px 12px rgba(30, 18, 119, 0.25);
+      }
+      header.app-header h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        text-align: center;
+      }
+      header.app-header p {
+        margin: 4px 0 0;
+        font-size: 13px;
+        opacity: 0.85;
+      }
+
+      /* ---------- Search ---------- */
+      .search-wrap {
+        padding: 12px 16px 4px;
+        background: var(--bg);
+        position: sticky;
+        top: 64px;
+        z-index: 9;
+      }
+      .search-wrap input {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 15px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--surface);
+        outline: none;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .search-wrap input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-soft);
+      }
+
+      /* ---------- Content ---------- */
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 12px 14px 24px;
+      }
+
+      /* ---------- Card ---------- */
+      .card {
+        background: var(--surface);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin: 14px 0;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .card-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        background: #fafbfc;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .card-meta .badge {
+        background: rgba(30, 18, 119, 0.1);
+        color: var(--accent);
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+      }
+      .card-meta .title {
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .card-body {
+        padding: 18px 16px 6px;
+      }
+
+      /* Word-by-word block */
+      .words {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        direction: rtl;
+        padding: 4px 0 14px;
+      }
+      .word {
+        background: #f4f5ef;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 12px 6px;
+        min-width: 84px;
+        text-align: center;
+        transition:
+          transform 0.12s,
+          box-shadow 0.12s,
+          border-color 0.12s;
+        cursor: default;
+      }
+      .word:active {
+        transform: scale(0.97);
+        border-color: var(--accent);
+        box-shadow: 0 2px 8px rgba(30, 18, 119, 0.18);
+      }
+      .word .ar {
+        font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', serif;
+        font-size: var(--word-size);
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.4;
+        display: block;
+      }
+      .word .tr {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.3;
+        direction: ltr;
+      }
+
+      /* Empty state */
+      .empty {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      /* Footer hint */
+      .footer-hint {
+        max-width: 720px;
+        margin: 24px auto 0;
+        padding: 14px 16px;
+        font-size: 12px;
+        color: var(--muted);
+        text-align: center;
+        line-height: 1.6;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Дуа из Корана и Сунны</h1>
+    </header>
+
+    <div class="search-wrap">
+      <input
+        id="search"
+        type="search"
+        placeholder="Поиск по слову или переводу…"
+        autocomplete="off"
+      />
+    </div>
+
+    <main id="list"></main>
+
+    <script>
+      const TEXTS = [
+        // ───────────── ПРИМЕР 1 ─────────────
+        {
+          id: 1,
+          tag: 'Коран',
+          title: 'Сура «аль-Бакара» : Аят 201 ',
+          words: [
+            { ar: 'رَبَّنَا', tr: 'Господь наш' },
+            { ar: 'آتِنَا', tr: 'даруй нам' },
+            { ar: 'فِي', tr: 'в' },
+            { ar: 'الدُّنْيَا', tr: 'мирской жизни' },
+            { ar: 'حَسَنَةً', tr: 'благо' },
+            { ar: 'وَفِي', tr: 'и в' },
+            { ar: 'الْآخِرَةِ', tr: 'Последней жизни' },
+            { ar: 'حَسَنَةً', tr: 'благо' },
+            { ar: 'وَقِنَا', tr: 'и защити нас' },
+            { ar: 'عَذَابَ', tr: 'от мучения' },
+            { ar: 'النَّارِ', tr: 'Огня' },
+          ],
+        },
+
+        // ───────────── ПРИМЕР 2 ─────────────
+        {
+          id: 2,
+          tag: 'Коран',
+          title: 'Сура «Та Ха» : Аят 114',
+          words: [
+            { ar: 'رَبِّ', tr: 'Господи' },
+            { ar: 'زِدْنِي', tr: 'прибавь мне' },
+            { ar: 'عِلْمًا', tr: 'знание' },
+          ],
+        },
+
+        // ───────────── ПРИМЕР 3 ─────────────
+        {
+          id: 3,
+          tag: 'Сунна',
+          title: 'Сборник Абу Дауда : №1522 (Сахих)',
+          words: [
+            { ar: 'اللَّهُمَّ', tr: 'О, Аллах' },
+            { ar: 'أَعِنِّي', tr: 'помоги мне' },
+            { ar: 'عَلَى', tr: 'для' },
+            { ar: 'ذِكْرِكَ', tr: 'поминания Тебя' },
+            { ar: 'وَشُكْرِكَ', tr: 'и благодарения Тебя' },
+            { ar: 'وَحُسْنِ', tr: 'и хорошей формы' },
+            { ar: 'عِبَادَتِكَ', tr: 'поклонения Тебе' },
+          ],
+        },
+      ];
+
+      // ---------- Рендер ----------
+      const listEl = document.getElementById('list');
+      const searchEl = document.getElementById('search');
+
+      function escapeHtml(str) {
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+
+      function renderCard(item) {
+        const wordsHtml = item.words
+          .map(
+            (w) => `
+        <div class="word">
+          <span class="ar">${escapeHtml(w.ar)}</span>
+          <span class="tr">${escapeHtml(w.tr)}</span>
+        </div>
+      `
+          )
+          .join('');
+
+        const metaHtml =
+          item.tag || item.title
+            ? `<div class="card-meta">
+                 ${item.tag ? `<span class="badge">${escapeHtml(item.tag)}</span>` : ''}
+                 ${item.title ? `<span class="title">${escapeHtml(item.title)}</span>` : ''}
+               </div>`
+            : '';
+
+        return `
+        <article class="card" data-id="${item.id}">
+          ${metaHtml}
+          <div class="card-body">
+            <div class="words">${wordsHtml}</div>
+          </div>
+        </article>
+      `;
+      }
+
+      function render(query = '') {
+        const q = query.trim().toLowerCase();
+        const filtered = q
+          ? TEXTS.filter(
+              (t) =>
+                (t.title && t.title.toLowerCase().includes(q)) ||
+                (t.tag && t.tag.toLowerCase().includes(q)) ||
+                t.words.some(
+                  (w) => w.ar.toLowerCase().includes(q) || w.tr.toLowerCase().includes(q)
+                )
+            )
+          : TEXTS;
+
+        listEl.innerHTML = filtered.length
+          ? filtered.map(renderCard).join('')
+          : '<div class="empty">Ничего не найдено.</div>';
+      }
+
+      searchEl.addEventListener('input', (e) => render(e.target.value));
+      render();
+    </script>
+  </body>
+</html>
