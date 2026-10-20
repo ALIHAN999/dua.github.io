@@ -128,7 +128,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 8px;
-        padding: 10px 14px;
+        padding: 9px 12px 9px 14px;
         border-bottom: 1px solid var(--border);
         background: #fafbfc;
         font-size: 12px;
@@ -137,7 +137,8 @@
       .card-meta-left {
         display: flex;
         align-items: center;
-        gap: 8px;
+        flex-wrap: wrap;
+        gap: 6px 8px;
         min-width: 0;
       }
       .card-meta .badge {
@@ -152,17 +153,18 @@
       .card-meta .title {
         font-weight: 600;
         color: var(--text);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        line-height: 1.35;
       }
       .copy-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
         background: transparent;
         border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 4px 8px;
-        font-size: 11px;
-        font-weight: 500;
+        border-radius: 7px;
         color: var(--muted);
         cursor: pointer;
         transition: all 0.15s;
@@ -172,10 +174,18 @@
         background: #f3f4f6;
         color: var(--text);
       }
+      .copy-btn:active {
+        transform: scale(0.94);
+      }
       .copy-btn.copied {
         background: #dcfce7;
         border-color: #86efac;
         color: #166534;
+      }
+      .copy-btn svg {
+        width: 15px;
+        height: 15px;
+        pointer-events: none;
       }
 
       .card-body {
@@ -231,7 +241,7 @@
         direction: ltr;
       }
 
-      /* Empty state (исправлен контраст на синем фоне) */
+      /* Empty state */
       .empty {
         text-align: center;
         padding: 40px 20px;
@@ -251,7 +261,7 @@
       <input
         id="search"
         type="search"
-        placeholder="Поиск по арабскому слову, переводу или источнику…"
+        placeholder="Поиск по слову или переводу…"
         autocomplete="off"
       />
     </div>
@@ -438,6 +448,10 @@
         },
       ];
 
+      // ---------- Иконки ----------
+      const COPY_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+      const CHECK_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
       // ---------- Утилиты и нормализация ----------
       const listEl = document.getElementById('list');
       const searchEl = document.getElementById('search');
@@ -450,8 +464,8 @@
       function normalizeText(str) {
         return String(str)
           .toLowerCase()
-          .replace(/[\u064B-\u065F\u0670\u0640]/g, '') // удаление ташкиля и татвиля
-          .replace(/[أإآٱ]/g, 'ا') // нормализация разных форм алифа
+          .replace(/[\u064B-\u065F\u0670\u0640]/g, '')
+          .replace(/[أإآٱ]/g, 'ا')
           .replace(/ё/g, 'е')
           .trim();
       }
@@ -481,7 +495,7 @@
                    ${item.tag ? `<span class="badge">${escapeHtml(item.tag)}</span>` : ''}
                    ${item.title ? `<span class="title">${escapeHtml(item.title)}</span>` : ''}
                  </div>
-                 <button class="copy-btn" data-copy-id="${item.id}" type="button">Копировать</button>
+                 <button class="copy-btn" data-copy-id="${item.id}" type="button" title="Скопировать дуа" aria-label="Скопировать дуа">${COPY_ICON}</button>
                </div>`
             : '';
 
@@ -527,13 +541,12 @@
         const textToCopy = `${arabicFull}\n\n«${translationFull}»\n(${item.title})`;
 
         navigator.clipboard.writeText(textToCopy).then(() => {
-          const originalText = btn.textContent;
-          btn.textContent = 'Скопировано!';
+          btn.innerHTML = CHECK_ICON;
           btn.classList.add('copied');
           setTimeout(() => {
-            btn.textContent = originalText;
+            btn.innerHTML = COPY_ICON;
             btn.classList.remove('copied');
-          }, 1800);
+          }, 1600);
         });
       });
 
