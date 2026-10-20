@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-    <meta name="theme-color" content="#1e1277" />
+    <meta name="theme-color" content="#254689" />
     <title>Дуа из Корана и Сунны</title>
 
-    <!-- Noto Naskh Arabic for Arabic body text -->
+    <!-- Noto Naskh Arabic for Arabic body text & Inter for UI -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@500;700&family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="icon" type="image/png" href="favicon.png" />
@@ -23,6 +23,8 @@
         --muted: #6b7280;
         --accent: #1e1277;
         --accent-soft: #ccfbf1;
+        --highlight-bg: #fef9c3;
+        --highlight-border: #fde047;
         --border: #e5e7eb;
         --word-size: 26px;
         --radius: 14px;
@@ -72,11 +74,6 @@
         letter-spacing: 0.2px;
         text-align: center;
       }
-      header.app-header p {
-        margin: 4px 0 0;
-        font-size: 13px;
-        opacity: 0.85;
-      }
 
       /* ---------- Search ---------- */
       .search-wrap {
@@ -96,6 +93,7 @@
         border: 1px solid var(--border);
         border-radius: 12px;
         background: var(--surface);
+        color: var(--text);
         outline: none;
         transition:
           border-color 0.15s,
@@ -128,12 +126,19 @@
       .card-meta {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 8px;
         padding: 10px 14px;
         border-bottom: 1px solid var(--border);
         background: #fafbfc;
         font-size: 12px;
         color: var(--muted);
+      }
+      .card-meta-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
       }
       .card-meta .badge {
         background: rgba(30, 18, 119, 0.1);
@@ -142,10 +147,35 @@
         padding: 2px 8px;
         border-radius: 999px;
         font-size: 11px;
+        flex-shrink: 0;
       }
       .card-meta .title {
         font-weight: 600;
         color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .copy-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted);
+        cursor: pointer;
+        transition: all 0.15s;
+        flex-shrink: 0;
+      }
+      .copy-btn:hover {
+        background: #f3f4f6;
+        color: var(--text);
+      }
+      .copy-btn.copied {
+        background: #dcfce7;
+        border-color: #86efac;
+        color: #166534;
       }
 
       .card-body {
@@ -170,8 +200,13 @@
         transition:
           transform 0.12s,
           box-shadow 0.12s,
-          border-color 0.12s;
+          border-color 0.12s,
+          background-color 0.15s;
         cursor: default;
+      }
+      .word.match {
+        background: var(--highlight-bg);
+        border-color: var(--highlight-border);
       }
       .word:active {
         transform: scale(0.97);
@@ -179,7 +214,7 @@
         box-shadow: 0 2px 8px rgba(30, 18, 119, 0.18);
       }
       .word .ar {
-        font-family: 'Noto Naskh Arabic', 'Noto Sans Arabic', serif;
+        font-family: 'Noto Naskh Arabic', serif;
         font-size: var(--word-size);
         font-weight: 600;
         color: #0f172a;
@@ -196,23 +231,14 @@
         direction: ltr;
       }
 
-      /* Empty state */
+      /* Empty state (исправлен контраст на синем фоне) */
       .empty {
         text-align: center;
         padding: 40px 20px;
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      /* Footer hint */
-      .footer-hint {
-        max-width: 720px;
-        margin: 24px auto 0;
-        padding: 14px 16px;
-        font-size: 12px;
-        color: var(--muted);
-        text-align: center;
-        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius);
+        font-size: 15px;
       }
     </style>
   </head>
@@ -225,7 +251,7 @@
       <input
         id="search"
         type="search"
-        placeholder="Поиск по слову или переводу…"
+        placeholder="Поиск по арабскому слову, переводу или источнику…"
         autocomplete="off"
       />
     </div>
@@ -238,7 +264,7 @@
         {
           id: 1,
           tag: 'Коран',
-          title: 'Сура «аль-Бакара» : Аят 201 ',
+          title: 'Сура «аль-Бакара» : Аят 201',
           words: [
             { ar: 'رَبَّنَا', tr: 'Господь наш' },
             { ar: 'آتِنَا', tr: 'даруй нам' },
@@ -292,9 +318,9 @@
             { ar: 'إِنِّي', tr: 'поистине, я' },
             { ar: 'أَسْأَلُكَ', tr: 'прошу у Тебя' },
             { ar: 'عِلْمًا', tr: 'знания' },
-            { ar: ' نَافِعًا', tr: 'приносящего пользу' },
+            { ar: 'نَافِعًا', tr: 'приносящего пользу' },
             { ar: 'وَرِزْقًا', tr: 'и удела' },
-            { ar: ' طَيِّبًا', tr: 'благого' },
+            { ar: 'طَيِّبًا', tr: 'благого' },
             { ar: 'وَعَمَلًا', tr: 'и дела' },
             { ar: 'مُتَقَبَّلًا', tr: 'принятого' },
           ],
@@ -412,7 +438,7 @@
         },
       ];
 
-      // ---------- Рендер ----------
+      // ---------- Утилиты и нормализация ----------
       const listEl = document.getElementById('list');
       const searchEl = document.getElementById('search');
 
@@ -420,23 +446,42 @@
         return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
 
-      function renderCard(item) {
+      // Удаляет арабские огласовки (харакаты), нормализует алиф и русскую "ё"
+      function normalizeText(str) {
+        return String(str)
+          .toLowerCase()
+          .replace(/[\u064B-\u065F\u0670\u0640]/g, '') // удаление ташкиля и татвиля
+          .replace(/[أإآٱ]/g, 'ا') // нормализация разных форм алифа
+          .replace(/ё/g, 'е')
+          .trim();
+      }
+
+      // ---------- Рендер ----------
+      function renderCard(item, normalizedQuery) {
         const wordsHtml = item.words
-          .map(
-            (w) => `
-        <div class="word">
+          .map((w) => {
+            const isMatch =
+              normalizedQuery &&
+              (normalizeText(w.ar).includes(normalizedQuery) ||
+                normalizeText(w.tr).includes(normalizedQuery));
+
+            return `
+        <div class="word${isMatch ? ' match' : ''}">
           <span class="ar">${escapeHtml(w.ar)}</span>
           <span class="tr">${escapeHtml(w.tr)}</span>
         </div>
-      `
-          )
+      `;
+          })
           .join('');
 
         const metaHtml =
           item.tag || item.title
             ? `<div class="card-meta">
-                 ${item.tag ? `<span class="badge">${escapeHtml(item.tag)}</span>` : ''}
-                 ${item.title ? `<span class="title">${escapeHtml(item.title)}</span>` : ''}
+                 <div class="card-meta-left">
+                   ${item.tag ? `<span class="badge">${escapeHtml(item.tag)}</span>` : ''}
+                   ${item.title ? `<span class="title">${escapeHtml(item.title)}</span>` : ''}
+                 </div>
+                 <button class="copy-btn" data-copy-id="${item.id}" type="button">Копировать</button>
                </div>`
             : '';
 
@@ -451,22 +496,46 @@
       }
 
       function render(query = '') {
-        const q = query.trim().toLowerCase();
+        const q = normalizeText(query);
         const filtered = q
           ? TEXTS.filter(
               (t) =>
-                (t.title && t.title.toLowerCase().includes(q)) ||
-                (t.tag && t.tag.toLowerCase().includes(q)) ||
+                (t.title && normalizeText(t.title).includes(q)) ||
+                (t.tag && normalizeText(t.tag).includes(q)) ||
                 t.words.some(
-                  (w) => w.ar.toLowerCase().includes(q) || w.tr.toLowerCase().includes(q)
+                  (w) => normalizeText(w.ar).includes(q) || normalizeText(w.tr).includes(q)
                 )
             )
           : TEXTS;
 
         listEl.innerHTML = filtered.length
-          ? filtered.map(renderCard).join('')
-          : '<div class="empty">Ничего не найдено.</div>';
+          ? filtered.map((item) => renderCard(item, q)).join('')
+          : '<div class="empty">По вашему запросу ничего не найдено.</div>';
       }
+
+      // Копирование полного текста дуа и перевода
+      listEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('.copy-btn');
+        if (!btn) return;
+
+        const id = Number(btn.dataset.copyId);
+        const item = TEXTS.find((t) => t.id === id);
+        if (!item) return;
+
+        const arabicFull = item.words.map((w) => w.ar.trim()).join(' ');
+        const translationFull = item.words.map((w) => w.tr.trim()).join(' ');
+        const textToCopy = `${arabicFull}\n\n«${translationFull}»\n(${item.title})`;
+
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          const originalText = btn.textContent;
+          btn.textContent = 'Скопировано!';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = originalText;
+            btn.classList.remove('copied');
+          }, 1800);
+        });
+      });
 
       searchEl.addEventListener('input', (e) => render(e.target.value));
       render();
